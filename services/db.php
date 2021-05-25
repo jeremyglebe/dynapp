@@ -125,3 +125,43 @@ function db_get_user_checklists($user_id)
     // Return the result processed into an array
     return $result;
 }
+
+function db_create_ticket($td)
+{
+    // Establish database connection
+    $conn = db_connect();
+    // Prepare the query
+    $query = $conn -> prepare(
+        "INSERT INTO `dynastyod`.`tickets`
+        (`ticket_id`, `first_name`, `last_name`,
+        `address1`, `city`, `state`, `zip`,
+        `phone`, `email`,
+        `summary`, `report_date`, `comp_date`, `type`,
+        `notes`, `user_name`, `accept_date`, `billing`, `sched_date`)
+        VALUES
+        (NULL, ?, ?,
+        ?, ?, ?, ?,
+        ?, ?,
+        ?, ?, '', ?,
+        '', '', '', '', '');"
+    );
+    // Attach the username argument provided
+    $query -> bind_param(
+        "sssssssssss",
+        $td['first_name'],
+        $td['last_name'],
+        $td['address1'],
+        $td['city'],
+        $td['state'],
+        $td['zip'],
+        $td['phone'],
+        $td['email'],
+        $td['summary'],
+        $td['report_date'],
+        $td['type']
+    );
+    // Execute and store the result of the query
+    $success = $query->execute();
+    // Return the status of the query (success, true or false)
+    return $success;
+}
