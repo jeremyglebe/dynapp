@@ -10,10 +10,10 @@ try {
     $user = common_user();
     // If the user matches the provided username
     if ($user && ($user["user_id"] == $post["user_id"] || $user["usertype_cd"] == 'A')) {
-        // Get the user's tickets
-        $tickets = db_get_user_checklists($post["user_id"]);
-        // Provide a json of the tickets
-        echo ncode_json($tickets);
+        // Get the user's checklists
+        $checklists = db_get_user_checklists($post["user_id"]);
+        // Provide a json of the checklists
+        echo ncode_json($checklists);
     } else {
         echo "null";
     }
