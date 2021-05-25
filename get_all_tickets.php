@@ -8,13 +8,14 @@ try {
     $user = common_user();
     // Only if an authenticated user exists, has a usertype, and is admin
     // -> we can provide them with all the tickets
-    if ($user && isset($user["usertype_cd"]) && $user["usertype_cd"] == 'A') {
+    if (isset($user["usertype_cd"]) && $user["usertype_cd"] == 'A') {
         $tickets = db_get_all_tickets();
         echo ncode_json($tickets);
     } else {
-        // Any other circumstances result in null
-        echo "null";
+        throw new Exception('ERROR: get_all_tickets.php; Requesting user lacks permission! (Must be admin)');
     }
-} catch (Exception $e) {
-    echo $e->getMessage();
+}
+// Catch any errors and echo them back
+catch (Exception $e) {
+    common_echo_error($e);
 }

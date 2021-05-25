@@ -44,16 +44,12 @@ function db_result_array(\mysqli_result $result)
  */
 function db_get_all_tickets()
 {
-    try {
-        // Establish database connection
-        $conn = db_connect();
-        // Run SQL query to get all tickets
-        $result = $conn->query("SELECT * FROM tickets;");
-        // Return the result processed into an array
-        return db_result_array($result);
-    } catch (Exception $e) {
-        echo $e->getMessage();
-    }
+    // Establish database connection
+    $conn = db_connect();
+    // Run SQL query to get all tickets
+    $result = $conn->query("SELECT * FROM tickets;");
+    // Return the result processed into an array
+    return db_result_array($result);
 }
 
 /**
