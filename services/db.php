@@ -82,33 +82,48 @@ function db_get_user_checklists($user_id)
     // Establish database connection
     $conn = db_connect();
 
-    // Query to find out what lists belong to the user
-    $query = $conn -> prepare("SELECT * FROM user_lists WHERE user_id=?;");
+    // Query to find all lists belonging to the user
+    $query = $conn -> prepare("SELECT list_id FROM user_lists WHERE user_id=?;");
     $query -> bind_param("s", $user_id);
     $query->execute();
-    $user_lists = db_result_array($query->get_result());
+    $query_user_lists = db_result_array($query->get_result());
 
-    // Process each user list
-    foreach ($user_lists as $ulist) {
-        // Query to get the items inside this checklist
-        $query = $conn -> prepare("SELECT * FROM lists WHERE list_id=?;");
-        $query -> bind_param("s", $ulist["list_id"]);
+    // Handle each of the lists which belong to the user
+    foreach ($query_user_lists as $row_user_list_info) {
+        // Create array of items' names
+        // Query to get all the entries inside this checklist
+        $query = $conn -> prepare("SELECT list_item_id FROM lists WHERE list_id=?;");
+        $query -> bind_param("s", $row_user_list_info["list_id"]);
         $query->execute();
-        $list_item_ids = db_result_array($query->get_result());
+        $query_lists = db_result_array($query->get_result());
 
-        // Process each list item id
-        foreach ($list_item_ids as $id) {
+        // Process each entry in the given user list
+        foreach ($query_lists as $row_list_entry) {
             // Query to get the actual list item
-            $query = $conn -> prepare("SELECT * FROM list_items WHERE list_item_id=?;");
-            $query -> bind_param("s", $id["list_item_id"]);
+            $query = $conn -> prepare("SELECT list_item_name FROM list_items WHERE list_item_id=?;");
+            $query -> bind_param("s", $row_list_entry["list_item_id"]);
             $query->execute();
-            $list_items = db_result_array($query->get_result());
+            $query_list_items = db_result_array($query->get_result());
 
             // Process each list item
-            foreach ($list_items as $item) {
-                $result[] = $item["list_item_name"];
+            foreach ($query_list_items as $row_item) {
+                $arr_item_names[] = $row_item["list_item_name"];
             }
         }
+
+
+        // Array of items' names has been created, now we need this checklists name
+        // Query to get name of the given checklist
+        $query = $conn -> prepare("SELECT list_name FROM list_name WHERE list_id=? LIMIT 1;");
+        $query -> bind_param("s", $row_user_list_info["list_id"]);
+        $query->execute();
+        $query_list_name = db_result_array($query->get_result());
+
+        // Associative array representing a single list belonging to the user
+        $map_user_list = [];
+        $map_user_list["list_name"] = $query_list_name[0]["list_name"];
+        $map_user_list["list_items"] = $arr_item_names;
+        $result[] = $map_user_list;
     }
 
     // Return the result processed into an array
