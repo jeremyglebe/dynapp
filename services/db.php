@@ -71,6 +71,25 @@ function db_get_user_tickets($username)
     return db_result_array($result);
 }
 
+/**
+ * Gets all the tickets not yet accepted from the database
+ * @return array contains all tickets as objects
+ */
+function db_get_unclaimed_tickets()
+{
+    // Establish database connection
+    $conn = db_connect();
+    // Prepare the query, with the user field being unknown
+    $query = $conn -> prepare("SELECT * FROM tickets WHERE accept_date='0000-00-00';");
+    // Attach the username argument provided
+    $query -> bind_param("s", $username);
+    // Execute and store the result of the query
+    $query->execute();
+    $result = $query->get_result();
+    // Return the result processed into an array
+    return db_result_array($result);
+}
+
 function db_get_user_checklists($user_id)
 {
     $result = [];
