@@ -145,6 +145,21 @@ function db_get_user_checklists($user_id)
     return $result;
 }
 
+function db_get_ticket_by_id($ticket_id)
+{
+    // Establish database connection
+    $conn = db_connect();
+    // Prepare the query, with the user field being unknown
+    $query = $conn -> prepare("SELECT * FROM tickets WHERE ticket_id=?;");
+    // Attach the username argument provided
+    $query -> bind_param("s", $ticket_id);
+    // Execute and store the result of the query
+    $query->execute();
+    $result = $query->get_result();
+    // Return the result processed into an array
+    return db_result_array($result);
+}
+
 function db_create_ticket($td)
 {
     // Establish database connection
