@@ -6,7 +6,7 @@ require_once("services/common.php");
 require_once("services/ncode.php");
 
 // 5MB
-const BYTE_LIMIT = 5242880;
+const BYTE_LIMIT = 20971520;
 
 try {
     // Get the ticket number associated with this image upload
