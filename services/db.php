@@ -16,26 +16,68 @@ function db_connect()
         return $result;
     }
 }
-/**
- * Gets the results of an SQL query as an array of objects
- * @param \mysqli_result $result the result of an already executed sql query
- * @return array contains all result rows as objects
- */
-function db_result_array(\mysqli_result $result)
+
+function db_create_log($log)
 {
-    if (!$result) {
-        // Error!
-        throw new Exception('ERROR: db_result_array(); No query result!');
-    } else {
-        $rows = [];
-        // Stupid PHP syntax that is basically "for row in result" (also, associative means key-value)
-        while ($row = $result -> fetch_array(MYSQLI_ASSOC)) {
-            // Extra stupid PHP syntax to declare an array... This appends each iteration
-            $rows[] = $row;
-        }
-        // Return the array containing the row objects
-        return $rows;
-    }
+    // Establish database connection
+    $conn = db_connect();
+    // Prepare the query
+    $query = $conn -> prepare(
+        "INSERT INTO `dynastyod`.`list_logs`
+        (`list_log_id`, `user_id`, `log_data`, `timestamp`)
+        VALUES (NULL, ?, ?, ?);"
+    );
+    // Attach the username argument provided
+    $query -> bind_param("sss", $log['user_id'], $log['log_data'], $log['timestamp']);
+    // Execute and store the result of the query
+    $success = $query->execute();
+    // Return the status of the query (success, true or false)
+    return $success;
+}
+
+/**
+ * Creates a new ticket in the database using INSERT.
+ * @param array $td Ticket data; should contain all keys for initial ticket creation
+ * @return boolean true if the INSERT query succeeds
+ */
+function db_create_ticket($td)
+{
+    // Establish database connection
+    $conn = db_connect();
+    // Prepare the query
+    $query = $conn -> prepare(
+        "INSERT INTO `dynastyod`.`tickets`
+        (`ticket_id`, `first_name`, `last_name`,
+        `address1`, `city`, `state`, `zip`,
+        `phone`, `email`,
+        `summary`, `report_date`, `comp_date`, `type`,
+        `notes`, `user_name`, `accept_date`, `billing`, `sched_date`)
+        VALUES
+        (NULL, ?, ?,
+        ?, ?, ?, ?,
+        ?, ?,
+        ?, ?, '', ?,
+        '', '', '', '', '');"
+    );
+    // Attach the username argument provided
+    $query -> bind_param(
+        "sssssssssss",
+        $td['first_name'],
+        $td['last_name'],
+        $td['address1'],
+        $td['city'],
+        $td['state'],
+        $td['zip'],
+        $td['phone'],
+        $td['email'],
+        $td['summary'],
+        $td['report_date'],
+        $td['type']
+    );
+    // Execute and store the result of the query
+    $success = $query->execute();
+    // Return the status of the query (success, true or false)
+    return $success;
 }
 
 /**
@@ -48,25 +90,6 @@ function db_get_all_tickets()
     $conn = db_connect();
     // Run SQL query to get all tickets
     $result = $conn->query("SELECT * FROM tickets;");
-    // Return the result processed into an array
-    return db_result_array($result);
-}
-
-/**
- * Gets all the tickets of a specific user from the database
- * @return array contains all tickets as objects
- */
-function db_get_user_tickets($username)
-{
-    // Establish database connection
-    $conn = db_connect();
-    // Prepare the query, with the user field being unknown
-    $query = $conn -> prepare("SELECT * FROM tickets WHERE user_name=?;");
-    // Attach the username argument provided
-    $query -> bind_param("s", $username);
-    // Execute and store the result of the query
-    $query->execute();
-    $result = $query->get_result();
     // Return the result processed into an array
     return db_result_array($result);
 }
@@ -126,7 +149,6 @@ function db_get_user_checklists($user_id)
             }
         }
 
-
         // Array of items' names has been created, now we need this checklists name
         // Query to get name of the given checklist
         $query = $conn -> prepare("SELECT list_name FROM list_name WHERE list_id=? LIMIT 1;");
@@ -145,6 +167,25 @@ function db_get_user_checklists($user_id)
     return $result;
 }
 
+/**
+ * Gets all the tickets of a specific user from the database
+ * @return array contains all tickets as objects
+ */
+function db_get_user_tickets($username)
+{
+    // Establish database connection
+    $conn = db_connect();
+    // Prepare the query, with the user field being unknown
+    $query = $conn -> prepare("SELECT * FROM tickets WHERE user_name=?;");
+    // Attach the username argument provided
+    $query -> bind_param("s", $username);
+    // Execute and store the result of the query
+    $query->execute();
+    $result = $query->get_result();
+    // Return the result processed into an array
+    return db_result_array($result);
+}
+
 function db_get_ticket_by_id($ticket_id)
 {
     // Establish database connection
@@ -160,42 +201,24 @@ function db_get_ticket_by_id($ticket_id)
     return db_result_array($result);
 }
 
-function db_create_ticket($td)
+/**
+ * Gets the results of an SQL query as an array of objects
+ * @param \mysqli_result $result the result of an already executed sql query
+ * @return array contains all result rows as objects
+ */
+function db_result_array(\mysqli_result $result)
 {
-    // Establish database connection
-    $conn = db_connect();
-    // Prepare the query
-    $query = $conn -> prepare(
-        "INSERT INTO `dynastyod`.`tickets`
-        (`ticket_id`, `first_name`, `last_name`,
-        `address1`, `city`, `state`, `zip`,
-        `phone`, `email`,
-        `summary`, `report_date`, `comp_date`, `type`,
-        `notes`, `user_name`, `accept_date`, `billing`, `sched_date`)
-        VALUES
-        (NULL, ?, ?,
-        ?, ?, ?, ?,
-        ?, ?,
-        ?, ?, '', ?,
-        '', '', '', '', '');"
-    );
-    // Attach the username argument provided
-    $query -> bind_param(
-        "sssssssssss",
-        $td['first_name'],
-        $td['last_name'],
-        $td['address1'],
-        $td['city'],
-        $td['state'],
-        $td['zip'],
-        $td['phone'],
-        $td['email'],
-        $td['summary'],
-        $td['report_date'],
-        $td['type']
-    );
-    // Execute and store the result of the query
-    $success = $query->execute();
-    // Return the status of the query (success, true or false)
-    return $success;
+    if (!$result) {
+        // Error!
+        throw new Exception('ERROR: db_result_array(); No query result!');
+    } else {
+        $rows = [];
+        // Stupid PHP syntax that is basically "for row in result" (also, associative means key-value)
+        while ($row = $result -> fetch_array(MYSQLI_ASSOC)) {
+            // Extra stupid PHP syntax to declare an array... This appends each iteration
+            $rows[] = $row;
+        }
+        // Return the array containing the row objects
+        return $rows;
+    }
 }
