@@ -1,4 +1,5 @@
 <?php
+require_once('common.php');
 
 /**
  * Establishes connection to the mysql database server-side
@@ -190,15 +191,29 @@ function db_get_ticket_by_id($ticket_id)
 {
     // Establish database connection
     $conn = db_connect();
-    // Prepare the query, with the user field being unknown
+    // Prepare the query, with the ticket_id field being unknown
     $query = $conn -> prepare("SELECT * FROM tickets WHERE ticket_id=?;");
-    // Attach the username argument provided
+    // Attach the ticket_id argument provided
     $query -> bind_param("s", $ticket_id);
     // Execute and store the result of the query
     $query->execute();
     $result = $query->get_result();
     // Return the result processed into an array
     return db_result_array($result);
+}
+
+function db_update_accept_ticket($ticket_id, $user_name)
+{
+    // Establish database connection
+    $conn = db_connect();
+    // Prepare the query
+    $query = $conn -> prepare("UPDATE tickets SET user_name=?, accept_date=CURDATE() WHERE ticket_id=? AND user_name='';");
+    // Attach the username argument provided
+    $query -> bind_param("ss", $user_name, $ticket_id);
+    // Execute and store the result of the query
+    $success = $query->execute();
+    // Return the status of the query (success, true or false)
+    return $success;
 }
 
 /**
