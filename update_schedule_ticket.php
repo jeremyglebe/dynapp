@@ -9,7 +9,7 @@ try {
     // Try to get an authenticated user
     $user = common_user();
     // Update the ticket to belong to the current user
-    $result = db_update_schedule_ticket($post["ticket_id"], $user["user_name"], $post["sched_date"], $post["summary"]);
+    $result = db_update_schedule_ticket($post["ticket_id"], $user["user_name"], $post["sched_date"], $post["notes"]);
     if ($result) {
         common_echo_success("Ticket updated/scheduled in the database!");
     } else {

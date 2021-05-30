@@ -216,14 +216,14 @@ function db_update_accept_ticket($ticket_id, $user_name)
     return $success;
 }
 
-function db_update_schedule_ticket($ticket_id, $user_name, $sched_date, $summary)
+function db_update_schedule_ticket($ticket_id, $user_name, $sched_date, $notes)
 {
     // Establish database connection
     $conn = db_connect();
     // Prepare the query
-    $query = $conn -> prepare("UPDATE tickets SET sched_date=?, summary=? WHERE ticket_id=? AND user_name=?;");
+    $query = $conn -> prepare("UPDATE tickets SET sched_date=?, notes=? WHERE ticket_id=? AND user_name=?;");
     // Attach the username argument provided
-    $query -> bind_param("ssss", $sched_date, $summary, $ticket_id, $user_name);
+    $query -> bind_param("ssss", $sched_date, $notes, $ticket_id, $user_name);
     // Execute and store the result of the query
     $success = $query->execute();
     // Return the status of the query (success, true or false)
