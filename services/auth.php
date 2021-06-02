@@ -21,9 +21,11 @@ function auth_pin($pin)
     if ($result->num_rows == 1) {
         // Extract the first row from the results
         $user_row = db_result_array($result)[0];
+        $id = $user_row["user_id"];
+        // Set the last login date in the database
+        $conn->query("UPDATE users SET last_login_ts=CURRENT_TIMESTAMP() WHERE user_id=$id;");
         // Remove some properties that shouldn't or needn't be sent elsewhere
         unset($user_row["password"]);
-        unset($user_row["last_login_ts"]);
         // Return true to show that we logged in
         return $user_row;
     }
