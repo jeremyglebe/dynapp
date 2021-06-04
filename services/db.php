@@ -246,14 +246,14 @@ function db_update_accept_ticket($ticket_id, $user_name)
     return $success;
 }
 
-function db_update_complete_ticket($ticket_id, $user_name, $comp_date, $billing, $summary)
+function db_update_complete_ticket($ticket_id, $user_name, $comp_date, $billing, $notes)
 {
     // Establish database connection
     $conn = db_connect();
     // Prepare the query
-    $query = $conn -> prepare("UPDATE tickets SET comp_date=?, billing=?, summary=? WHERE ticket_id=? AND user_name=?;");
+    $query = $conn -> prepare("UPDATE tickets SET comp_date=?, billing=?, notes=? WHERE ticket_id=? AND user_name=?;");
     // Attach the username argument provided
-    $query -> bind_param("sssss", $comp_date, $billing, $summary, $ticket_id, $user_name);
+    $query -> bind_param("sssss", $comp_date, $billing, $notes, $ticket_id, $user_name);
     // Execute and store the result of the query
     $success = $query->execute();
     // Return the status of the query (success, true or false)
