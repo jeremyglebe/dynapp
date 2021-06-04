@@ -41,6 +41,48 @@ function db_create_log($log)
  * @param array $td Ticket data; should contain all keys for initial ticket creation
  * @return boolean true if the INSERT query succeeds
  */
+function db_create_quote($td)
+{
+    // Establish database connection
+    $conn = db_connect();
+    // Prepare the query
+    $query = $conn -> prepare(
+        "INSERT INTO `dynastyod`.`tickets`
+        (`first_name`, `last_name`,
+        `address1`, `city`, `state`, `zip`,
+        `phone`, `email`,
+        `summary`, `report_date`, `type`, `notes`)
+        VALUES
+        (?, ?,
+        ?, ?, ?, ?,
+        ?, ?,
+        'QUOTE', ?, 'Quote', ?);"
+    );
+    // Attach the username argument provided
+    $query -> bind_param(
+        "ssssssssss",
+        $td['first_name'],
+        $td['last_name'],
+        $td['address1'],
+        $td['city'],
+        $td['state'],
+        $td['zip'],
+        $td['phone'],
+        $td['email'],
+        $td['report_date'],
+        $td['notes']
+    );
+    // Execute and store the result of the query
+    $success = $query->execute();
+    // Return the status of the query (success, true or false)
+    return $success;
+}
+
+/**
+ * Creates a new ticket in the database using INSERT.
+ * @param array $td Ticket data; should contain all keys for initial ticket creation
+ * @return boolean true if the INSERT query succeeds
+ */
 function db_create_ticket($td)
 {
     // Establish database connection
