@@ -181,8 +181,13 @@ function db_get_price($product)
     // Execute and store the result of the query
     $query->execute();
     $result = $query->get_result();
+    // Get array of rows
+    $rows = db_result_array($result);
+    if(count($rows) < 1){
+        throw new Exception('ERROR: db_get_price(); Product not found!');
+    }
     // Return the result processed into an array
-    return db_result_array($result)[0];
+    return $rows[0];
 }
 
 function db_get_ticket_by_id($ticket_id)
