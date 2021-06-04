@@ -9,11 +9,11 @@ try {
     // Try to get an authenticated user
     $user = common_user();
     // Create the ticket
-    $result = db_create_ticket($post);
+    $result = db_create_quote($post);
     if ($result) {
         common_echo_success("Ticket created in the database!");
     } else {
-        throw new Exception("ERROR: create_ticket.php; Ticket creation failed! (CAUSE UNKNOWN)");
+        throw new Exception("ERROR: create_quote.php; Ticket creation failed! (CAUSE UNKNOWN)");
     }
 }
 // Catch any errors and echo them back

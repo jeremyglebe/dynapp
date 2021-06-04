@@ -51,16 +51,21 @@ function db_create_quote($td)
         (`first_name`, `last_name`,
         `address1`, `city`, `state`, `zip`,
         `phone`, `email`,
-        `summary`, `report_date`, `type`, `notes`)
+        `summary`, `type`, `notes`, `report_date`,
+        `install_type`, `insulated`, `dimensions`, `rollup`, 
+        `opener`, `seal_type`, `seal_count`, `window_type`, 
+        `window_count`, `price_additional`, `color`, `price_quote`)
         VALUES
         (?, ?,
         ?, ?, ?, ?,
         ?, ?,
-        'QUOTE', ?, 'Quote', ?);"
+        'QUOTE', 'Quote', ?, CURDATE(),
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
     );
+    // common_echo_success($conn -> error);
     // Attach the username argument provided
     $query -> bind_param(
-        "ssssssssss",
+        "sssssssssssssssssssss",
         $td['first_name'],
         $td['last_name'],
         $td['address1'],
@@ -69,8 +74,19 @@ function db_create_quote($td)
         $td['zip'],
         $td['phone'],
         $td['email'],
-        $td['report_date'],
-        $td['notes']
+        $td['notes'],
+        $td['install_type'],
+        $td['insulated'],
+        $td['dimensions'],
+        $td['rollup'],
+        $td['opener'],
+        $td['seal_type'],
+        $td['seal_count'],
+        $td['window_type'],
+        $td['window_count'],
+        $td['price_additional'],
+        $td['color'],
+        $td['price_quote']
     );
     // Execute and store the result of the query
     $success = $query->execute();
