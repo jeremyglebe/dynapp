@@ -105,8 +105,36 @@ function db_get_unclaimed_tickets()
     $conn = db_connect();
     // Prepare the query, with the user field being unknown
     $query = $conn -> prepare("SELECT * FROM tickets WHERE accept_date='0000-00-00';");
-    // Attach the username argument provided
-    $query -> bind_param("s", $username);
+    // Execute and store the result of the query
+    $query->execute();
+    $result = $query->get_result();
+    // Return the result processed into an array
+    return db_result_array($result);
+}
+
+function db_get_price($product)
+{
+    // Establish database connection
+    $conn = db_connect();
+    // Prepare the query, with the user field being unknown
+    $query = $conn -> prepare("SELECT price FROM price WHERE product=?;");
+    // Attach the product argument provided
+    $query -> bind_param("s", $product);
+    // Execute and store the result of the query
+    $query->execute();
+    $result = $query->get_result();
+    // Return the result processed into an array
+    return db_result_array($result)[0];
+}
+
+function db_get_ticket_by_id($ticket_id)
+{
+    // Establish database connection
+    $conn = db_connect();
+    // Prepare the query, with the ticket_id field being unknown
+    $query = $conn -> prepare("SELECT * FROM tickets WHERE ticket_id=?;");
+    // Attach the ticket_id argument provided
+    $query -> bind_param("s", $ticket_id);
     // Execute and store the result of the query
     $query->execute();
     $result = $query->get_result();
@@ -217,19 +245,26 @@ function db_get_user_tickets_scheduled($username)
     return db_result_array($result);
 }
 
-function db_get_ticket_by_id($ticket_id)
+/**
+ * Gets the results of an SQL query as an array of objects
+ * @param \mysqli_result $result the result of an already executed sql query
+ * @return array contains all result rows as objects
+ */
+function db_result_array(\mysqli_result $result)
 {
-    // Establish database connection
-    $conn = db_connect();
-    // Prepare the query, with the ticket_id field being unknown
-    $query = $conn -> prepare("SELECT * FROM tickets WHERE ticket_id=?;");
-    // Attach the ticket_id argument provided
-    $query -> bind_param("s", $ticket_id);
-    // Execute and store the result of the query
-    $query->execute();
-    $result = $query->get_result();
-    // Return the result processed into an array
-    return db_result_array($result);
+    if (!$result) {
+        // Error!
+        throw new Exception('ERROR: db_result_array(); No query result!');
+    } else {
+        $rows = [];
+        // Stupid PHP syntax that is basically "for row in result" (also, associative means key-value)
+        while ($row = $result -> fetch_array(MYSQLI_ASSOC)) {
+            // Extra stupid PHP syntax to declare an array... This appends each iteration
+            $rows[] = $row;
+        }
+        // Return the array containing the row objects
+        return $rows;
+    }
 }
 
 function db_update_accept_ticket($ticket_id, $user_name)
@@ -272,26 +307,4 @@ function db_update_schedule_ticket($ticket_id, $user_name, $sched_date, $notes)
     $success = $query->execute();
     // Return the status of the query (success, true or false)
     return $success;
-}
-
-/**
- * Gets the results of an SQL query as an array of objects
- * @param \mysqli_result $result the result of an already executed sql query
- * @return array contains all result rows as objects
- */
-function db_result_array(\mysqli_result $result)
-{
-    if (!$result) {
-        // Error!
-        throw new Exception('ERROR: db_result_array(); No query result!');
-    } else {
-        $rows = [];
-        // Stupid PHP syntax that is basically "for row in result" (also, associative means key-value)
-        while ($row = $result -> fetch_array(MYSQLI_ASSOC)) {
-            // Extra stupid PHP syntax to declare an array... This appends each iteration
-            $rows[] = $row;
-        }
-        // Return the array containing the row objects
-        return $rows;
-    }
 }
