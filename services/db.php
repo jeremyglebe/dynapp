@@ -32,6 +32,9 @@ function db_create_log($log)
     $query -> bind_param("sss", $log['user_id'], $log['log_data'], $log['timestamp']);
     // Execute and store the result of the query
     $success = $query->execute();
+    if($conn->error != ''){
+        throw new Exception("ERROR: db_create_log(); $conn->error");
+    }
     // Return the status of the query (success, true or false)
     return $success;
 }
@@ -54,18 +57,19 @@ function db_create_quote($td)
         `summary`, `type`, `notes`, `report_date`,
         `install_type`, `insulated`, `dimensions`, `rollup`, 
         `opener`, `seal_type`, `seal_count`, `window_type`, 
-        `window_count`, `price_additional`, `color`, `price_quote`)
+        `window_count`, `price_additional`, `color`, `price_quote`,
+        `springs`, `section`, `cable`, `track`)
         VALUES
         (?, ?,
         ?, ?, ?, ?,
         ?, ?,
         'QUOTE', 'Quote', ?, CURDATE(),
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+        ?, ?, ?, ?);"
     );
-    // common_echo_success($conn -> error);
     // Attach the username argument provided
     $query -> bind_param(
-        "sssssssssssssssssssss",
+        "sssssssssssssssssssssssss",
         $td['first_name'],
         $td['last_name'],
         $td['address1'],
@@ -86,10 +90,18 @@ function db_create_quote($td)
         $td['window_count'],
         $td['price_additional'],
         $td['color'],
-        $td['price_quote']
+        $td['price_quote'],
+        $td['springs'],
+        $td['section'],
+        $td['cable'],
+        $td['track']
     );
     // Execute and store the result of the query
     $success = $query->execute();
+    if($conn->error != ''){
+        throw new Exception("ERROR: db_create_quote(); $conn->error");
+    }
+    // common_echo_success($conn -> error);
     // Return the status of the query (success, true or false)
     return $success;
 }
@@ -135,6 +147,9 @@ function db_create_ticket($td)
     );
     // Execute and store the result of the query
     $success = $query->execute();
+    if($conn->error != ''){
+        throw new Exception("ERROR: db_create_ticket(); $conn->error");
+    }
     // Return the status of the query (success, true or false)
     return $success;
 }
@@ -165,6 +180,9 @@ function db_get_unclaimed_tickets()
     $query = $conn -> prepare("SELECT * FROM tickets WHERE accept_date='0000-00-00';");
     // Execute and store the result of the query
     $query->execute();
+    if($conn->error != ''){
+        throw new Exception("ERROR: db_get_unclaimed_tickets(); $conn->error");
+    }
     $result = $query->get_result();
     // Return the result processed into an array
     return db_result_array($result);
@@ -180,10 +198,13 @@ function db_get_price($product)
     $query -> bind_param("s", $product);
     // Execute and store the result of the query
     $query->execute();
+    if($conn->error != ''){
+        throw new Exception("ERROR: db_get_price(); $conn->error");
+    }
     $result = $query->get_result();
     // Get array of rows
     $rows = db_result_array($result);
-    if(count($rows) < 1){
+    if (count($rows) < 1) {
         throw new Exception('ERROR: db_get_price(); Product not found!');
     }
     // Return the result processed into an array
@@ -200,6 +221,9 @@ function db_get_ticket_by_id($ticket_id)
     $query -> bind_param("s", $ticket_id);
     // Execute and store the result of the query
     $query->execute();
+    if($conn->error != ''){
+        throw new Exception("ERROR: db_get_ticket_by_id(); $conn->error");
+    }
     $result = $query->get_result();
     // Return the result processed into an array
     return db_result_array($result);
@@ -255,6 +279,9 @@ function db_get_user_checklists($user_id)
         $result[] = $map_user_list;
     }
 
+    if($conn->error != ''){
+        throw new Exception("ERROR: db_get_user_checklists(); $conn->error");
+    }
     // Return the result processed into an array
     return $result;
 }
@@ -273,6 +300,9 @@ function db_get_user_tickets($username)
     $query -> bind_param("s", $username);
     // Execute and store the result of the query
     $query->execute();
+    if($conn->error != ''){
+        throw new Exception("ERROR: db_get_user_tickets(); $conn->error");
+    }
     $result = $query->get_result();
     // Return the result processed into an array
     return db_result_array($result);
@@ -288,6 +318,9 @@ function db_get_user_tickets_accepted($username)
     $query -> bind_param("s", $username);
     // Execute and store the result of the query
     $query->execute();
+    if($conn->error != ''){
+        throw new Exception("ERROR: db_get_user_tickets_accepted(); $conn->error");
+    }
     $result = $query->get_result();
     // Return the result processed into an array
     return db_result_array($result);
@@ -303,6 +336,9 @@ function db_get_user_tickets_scheduled($username)
     $query -> bind_param("s", $username);
     // Execute and store the result of the query
     $query->execute();
+    if($conn->error != ''){
+        throw new Exception("ERROR: db_get_user_tickets_scheduled(); $conn->error");
+    }
     $result = $query->get_result();
     // Return the result processed into an array
     return db_result_array($result);
@@ -340,6 +376,9 @@ function db_update_accept_ticket($ticket_id, $user_name)
     $query -> bind_param("ss", $user_name, $ticket_id);
     // Execute and store the result of the query
     $success = $query->execute();
+    if($conn->error != ''){
+        throw new Exception("ERROR: db_update_accept_ticket(); $conn->error");
+    }
     // Return the status of the query (success, true or false)
     return $success;
 }
@@ -354,6 +393,9 @@ function db_update_complete_ticket($ticket_id, $user_name, $comp_date, $billing,
     $query -> bind_param("sssss", $comp_date, $billing, $notes, $ticket_id, $user_name);
     // Execute and store the result of the query
     $success = $query->execute();
+    if($conn->error != ''){
+        throw new Exception("ERROR: db_update_complete_ticket(); $conn->error");
+    }
     // Return the status of the query (success, true or false)
     return $success;
 }
@@ -368,6 +410,9 @@ function db_update_schedule_ticket($ticket_id, $user_name, $sched_date, $notes)
     $query -> bind_param("ssss", $sched_date, $notes, $ticket_id, $user_name);
     // Execute and store the result of the query
     $success = $query->execute();
+    if($conn->error != ''){
+        throw new Exception("ERROR: db_update_schedule_ticket(); $conn->error");
+    }
     // Return the status of the query (success, true or false)
     return $success;
 }
