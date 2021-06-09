@@ -10,7 +10,7 @@ try {
     // Get the user's checklists
     $checklists = db_get_user_checklists(-1);
     // Provide a json of the checklists
-    echo ncode_json($checklists);
+    echo ncode_json($checklists[0]);
 }
 // Catch any errors and echo them back
 catch (Exception $e) {
