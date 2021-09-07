@@ -12,7 +12,8 @@ $http_origin = $_SERVER['HTTP_ORIGIN'];
 $allowed_domains = array(
   'capacitor://localhost',
   'http://localhost',
-  'http://localhost:8100'
+  'http://localhost:8100',
+  'http://localhost:5000'
 );
 if (in_array($http_origin, $allowed_domains)) {
     header("Access-Control-Allow-Origin: $http_origin");
