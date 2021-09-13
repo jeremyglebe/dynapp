@@ -10,10 +10,11 @@ header('Content-Type: application/json; charset=utf-8');
 // https://stackoverflow.com/questions/7564832/how-to-bypass-access-control-allow-origin
 $http_origin = $_SERVER['HTTP_ORIGIN'];
 $allowed_domains = array(
-  'capacitor://localhost',
-  'http://localhost',
-  'http://localhost:8100',
-  'http://localhost:5000'
+  'capacitor://localhost', // Production using Capacitor
+  'http://localhost:8100', // Testing using Ionic cli
+  'http://localhost:5000', // Testing using firebase CLI
+  'https://dynasty-app-da4c9.web.app/', // Firebase domain
+  'https://dynastyod.app/', // PWA host
 );
 if (in_array($http_origin, $allowed_domains)) {
     header("Access-Control-Allow-Origin: $http_origin");
