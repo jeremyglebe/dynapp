@@ -8,7 +8,7 @@ require_once('common.php');
 function db_connect()
 {
     // Create the connection to the mysql database and store result
-    $result = new mysqli('127.0.0.1', 'root', 't4Gb#KzTq', 'dynastyod');
+    $result = new mysqli('localhost', 'root', 't4Gb#KzTq', 'dynastyod');
     if (!$result) {
         // Error!
         throw new Exception('ERROR: db_connect(); Connection failed!');
