@@ -277,6 +277,8 @@ function db_get_user_checklists($user_id)
         $map_user_list["list_name"] = $query_list_name[0]["list_name"];
         $map_user_list["list_items"] = $arr_item_names;
         $result[] = $map_user_list;
+        // Must unset the array items list or it will just keep appending each iteration
+        unset($arr_item_names);
     }
 
     if($conn->error != ''){
