@@ -6,8 +6,8 @@ require_once('services/ncode.php');
 try {
     // Try to get an authenticated user
     $user = common_user();
-    // Output the authenticated user
-    echo ncode_json($user);
+    $tickets = db_get_to_order_tickets();
+    echo ncode_json($tickets);
 }
 // Catch any errors and echo them back
 catch (Exception $e) {
