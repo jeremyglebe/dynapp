@@ -179,11 +179,55 @@ function db_get_unclaimed_tickets()
     // Prepare the query, with the user field being unknown
     // Added completion date check for some extra security against poorly 
     // formatted data
-    $query = $conn -> prepare("SELECT * FROM tickets WHERE accept_date='0000-00-00' AND comp_date='0000-00-00';");
+    $query = $conn -> prepare("SELECT * FROM tickets WHERE user_name="" AND comp_date='0000-00-00' AND sched_date='0000-00-00';");
     // Execute and store the result of the query
     $query->execute();
     if($conn->error != ''){
         throw new Exception("ERROR: db_get_unclaimed_tickets(); $conn->error");
+    }
+    $result = $query->get_result();
+    // Return the result processed into an array
+    return db_result_array($result);
+}
+
+/**
+ * Gets all the tickets with parts to be ordered
+ * @return array contains all tickets as objects
+ */
+function db_get_to_order_tickets()
+{
+    // Establish database connection
+    $conn = db_connect();
+    // Prepare the query, with the user field being unknown
+    // Added completion date check for some extra security against poorly 
+    // formatted data
+    $query = $conn -> prepare("SELECT * FROM tickets WHERE comp_date='0000-00-00' AND type='To Order';");
+    // Execute and store the result of the query
+    $query->execute();
+    if($conn->error != ''){
+        throw new Exception("ERROR: db_get_to_order_tickets(); $conn->error");
+    }
+    $result = $query->get_result();
+    // Return the result processed into an array
+    return db_result_array($result);
+}
+
+/**
+ * Gets all the tickets with parts that have been ordered but not arrived yet
+ * @return array contains all tickets as objects
+ */
+function db_get_on_order_tickets()
+{
+    // Establish database connection
+    $conn = db_connect();
+    // Prepare the query, with the user field being unknown
+    // Added completion date check for some extra security against poorly 
+    // formatted data
+    $query = $conn -> prepare("SELECT * FROM tickets WHERE comp_date='0000-00-00' AND type='On Order';");
+    // Execute and store the result of the query
+    $query->execute();
+    if($conn->error != ''){
+        throw new Exception("ERROR: db_get_on_order_tickets(); $conn->error");
     }
     $result = $query->get_result();
     // Return the result processed into an array
@@ -299,7 +343,7 @@ function db_get_user_tickets($username)
     // Establish database connection
     $conn = db_connect();
     // Prepare the query, with the user field being unknown
-    $query = $conn -> prepare("SELECT * FROM tickets WHERE user_name=?;");
+    $query = $conn -> prepare("SELECT * FROM tickets WHERE user_name=? AND comp_date='0000-00-00';");
     // Attach the username argument provided
     $query -> bind_param("s", $username);
     // Execute and store the result of the query
