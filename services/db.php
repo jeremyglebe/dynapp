@@ -179,7 +179,7 @@ function db_get_unclaimed_tickets()
     // Prepare the query, with the user field being unknown
     // Added completion date check for some extra security against poorly 
     // formatted data
-    $query = $conn -> prepare("SELECT * FROM tickets WHERE user_name="" AND comp_date='0000-00-00' AND sched_date='0000-00-00' AND type<>'To Order' AND type<>'On Order';");
+    $query = $conn -> prepare("SELECT * FROM tickets WHERE user_name='' AND comp_date='0000-00-00' AND sched_date='0000-00-00' AND type<>'To Order' AND type<>'On Order';");
     // Execute and store the result of the query
     $query->execute();
     if($conn->error != ''){
