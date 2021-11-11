@@ -5,8 +5,8 @@
 require_once("services/common.php");
 require_once("services/ncode.php");
 
-// 5MB
-const BYTE_LIMIT = 20971520;
+// 500 MiB
+const BYTE_LIMIT = 500*1024*1024;
 
 try {
     // Get the ticket number associated with this image upload
@@ -31,14 +31,14 @@ try {
         if ($ferr === UPLOAD_ERR_NO_FILE) {
             throw new Exception('ERROR: upload_ticket_image.php; No file sent!');
         } elseif ($ferr === UPLOAD_ERR_INI_SIZE || $ferr === UPLOAD_ERR_FORM_SIZE) {
-            throw new Exception('ERROR: upload_ticket_image.php; Uploaded files exceed size limit!');
+            throw new Exception('ERROR: upload_ticket_image.php; Uploaded files exceed size limit! (UPLOAD_ERR)');
         } elseif ($ferr !== UPLOAD_ERR_OK) {
             throw new Exception('ERROR: upload_ticket_image.php; Unknown error found in uploaded files!');
         }
 
         // Check size once more, against a hardcoded number (in bytes)
         if ($_FILES["ticket_image-$i"]['size'] > BYTE_LIMIT) {
-            throw new Exception('ERROR: upload_ticket_image.php; Uploaded files exceed size limit!');
+            throw new Exception('ERROR: upload_ticket_image.php; Uploaded files exceed size limit! (BYTE_LIMIT)');
         }
 
         // Check MIME type ($_FILES["ticket_image-$i"]['mime'] is untrustworthy)
