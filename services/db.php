@@ -436,7 +436,7 @@ function db_update_complete_ticket($ticket_id, $user_name, $comp_date, $billing,
     // Prepare the query
     $query = $conn -> prepare("UPDATE tickets SET comp_date=?, billing=?, notes=CONCAT(notes, '\n" . date("Y-m-d") . ": ', ?) WHERE ticket_id=?");
     // Attach the username argument provided
-    $query -> bind_param("sssss", $comp_date, $billing, $notes, $ticket_id, $user_name);
+    $query -> bind_param("ssss", $comp_date, $billing, $notes, $ticket_id);
     // Execute and store the result of the query
     $success = $query->execute();
     if ($conn->error != '') {
