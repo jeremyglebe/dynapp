@@ -451,7 +451,7 @@ function db_update_schedule_ticket($ticket_id, $user_name, $sched_date, $notes)
     // Establish database connection
     $conn = db_connect();
     // Prepare the query
-    $query = $conn -> prepare("UPDATE tickets SET `type`='Scheduled', `user`='', `accept_date`='0000-00-00', sched_date=?, notes=CONCAT(notes, '\n" . date("Y-m-d") . ": ', ?) WHERE ticket_id=?;");
+    $query = $conn -> prepare("UPDATE tickets SET `type`='Scheduled', `user_name`='', `accept_date`='0000-00-00', sched_date=?, notes=CONCAT(notes, '\n" . date("Y-m-d") . ": ', ?) WHERE ticket_id=?;");
     // Attach the username argument provided
     $query -> bind_param("sss", $sched_date, $notes, $ticket_id);
     // Execute and store the result of the query
