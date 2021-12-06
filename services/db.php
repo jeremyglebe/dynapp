@@ -18,7 +18,8 @@ function db_connect()
     }
 }
 
-function db_create_image_listing($data){
+function db_create_image_listing($data)
+{
     // Establish database connection
     $conn = db_connect();
     // Prepare the query
@@ -219,12 +220,12 @@ function db_get_to_order_tickets()
     // Establish database connection
     $conn = db_connect();
     // Prepare the query, with the user field being unknown
-    // Added completion date check for some extra security against poorly 
+    // Added completion date check for some extra security against poorly
     // formatted data
     $query = $conn -> prepare("SELECT * FROM tickets WHERE comp_date='0000-00-00' AND type='To Order';");
     // Execute and store the result of the query
     $query->execute();
-    if($conn->error != ''){
+    if ($conn->error != '') {
         throw new Exception("ERROR: db_get_to_order_tickets(); $conn->error");
     }
     $result = $query->get_result();
@@ -241,12 +242,12 @@ function db_get_on_order_tickets()
     // Establish database connection
     $conn = db_connect();
     // Prepare the query, with the user field being unknown
-    // Added completion date check for some extra security against poorly 
+    // Added completion date check for some extra security against poorly
     // formatted data
     $query = $conn -> prepare("SELECT * FROM tickets WHERE comp_date='0000-00-00' AND type='On Order';");
     // Execute and store the result of the query
     $query->execute();
-    if($conn->error != ''){
+    if ($conn->error != '') {
         throw new Exception("ERROR: db_get_on_order_tickets(); $conn->error");
     }
     $result = $query->get_result();
@@ -352,6 +353,25 @@ function db_get_user_checklists($user_id)
     }
     // Return the result processed into an array
     return $result;
+}
+
+function db_get_image_list($ticket_id)
+{
+    $result = [];
+
+    // Establish database connection
+    $conn = db_connect();
+
+    // Query to find all lists belonging to the user
+    $query = $conn -> prepare("SELECT `image` FROM `image_lists` WHERE `ticket_id`=?;");
+    $query -> bind_param("s", $ticket_id);
+    $query->execute();
+    if ($conn->error != '') {
+        throw new Exception("ERROR: db_get_image_list(); $conn->error");
+    }
+    $result = $query->get_result();
+    // Return the result processed into an array
+    return db_result_array($result);
 }
 
 /**
