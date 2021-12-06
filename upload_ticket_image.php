@@ -62,6 +62,14 @@ try {
         if (!$move_result) {
             throw new Exception('ERROR: upload_ticket_image.php; Failed to store uploaded file!');
         }
+
+        // Upload the image to ticket image lists
+        $result = db_create_image_listing(array("ticket_id"=>$ticket_id, "image"=>"ticket-$ticket_id-$i.$ext"));
+        if ($result) {
+            common_echo_success("Image listed in the database!");
+        } else {
+            throw new Exception("ERROR: upload_ticket_image.php; Image listing failed! (CAUSE UNKNOWN)");
+        }
     }
     
     // If no errors occurred, just send a feedback object to indicate success

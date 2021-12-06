@@ -18,6 +18,26 @@ function db_connect()
     }
 }
 
+function db_create_image_listing($data){
+    // Establish database connection
+    $conn = db_connect();
+    // Prepare the query
+    $query = $conn -> prepare(
+        "INSERT INTO `dynastyod`.`image_lists`
+        (`ticket_id`, `image`)
+        VALUES (?, ?);"
+    );
+    // Attach the username argument provided
+    $query -> bind_param("ss", $data['ticket_id'], $data['image']);
+    // Execute and store the result of the query
+    $success = $query->execute();
+    if ($conn->error != '') {
+        throw new Exception("ERROR: db_create_image_listing(); $conn->error");
+    }
+    // Return the status of the query (success, true or false)
+    return $success;
+}
+
 function db_create_log($log)
 {
     // Establish database connection
