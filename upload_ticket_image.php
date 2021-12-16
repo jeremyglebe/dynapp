@@ -21,6 +21,10 @@ try {
     // The date
     $stamp = time();
 
+    // We're processing multiple images, so we will need to wrap the output in an array
+    // for returning JSON. Just echoing the outer brackets.
+    echo "[";
+
     // We will need to test and move each uploaded file
     for ($i = 0; $i < count($_FILES); $i++) {
         // Uploaded files must have an "error" property, on success this property is an "ok" flag
@@ -70,6 +74,8 @@ try {
         $result = db_create_image_listing(array("ticket_id"=>$ticket_id, "image"=>"ticket-$ticket_id-$stamp-$i.$ext"));
         if ($result) {
             common_echo_success("Image listed in the database!");
+            // Add a comma for returning json list to requester
+            echo ",";
         } else {
             throw new Exception("ERROR: upload_ticket_image.php; Image listing failed! (CAUSE UNKNOWN)");
         }
@@ -77,8 +83,13 @@ try {
     
     // If no errors occurred, just send a feedback object to indicate success
     common_echo_success('Files uploaded successfully');
+    
+    // Finishing the JSON array text
+    echo "]";
 }
 // Catch any errors and echo them back
 catch (Exception $e) {
     common_echo_error($e);
+    // Finishing the JSON array text
+    echo "]";
 }
