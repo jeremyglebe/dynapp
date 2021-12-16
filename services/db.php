@@ -536,3 +536,20 @@ function db_update_on_order_ticket($ticket_id, $user_name, $notes)
     // Return the status of the query (success, true or false)
     return $success;
 }
+
+function db_update_ticket_notes($ticket_id, $notes)
+{
+    // Establish database connection
+    $conn = db_connect();
+    // Prepare the query
+    $query = $conn -> prepare("UPDATE tickets SET notes=CONCAT(notes, '\n" . date("Y-m-d") . ": ', ?) WHERE ticket_id=?;");
+    // Attach the username argument provided
+    $query -> bind_param("ss", $notes, $ticket_id);
+    // Execute and store the result of the query
+    $success = $query->execute();
+    if ($conn->error != '') {
+        throw new Exception("ERROR: db_update_ticket_notes(); $conn->error");
+    }
+    // Return the status of the query (success, true or false)
+    return $success;
+}
