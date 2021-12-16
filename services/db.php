@@ -474,14 +474,15 @@ function db_update_complete_ticket($ticket_id, $user_name, $comp_date, $billing,
     // Establish database connection
     $conn = db_connect();
     // Prepare the query
-    $query = $conn -> prepare("UPDATE tickets SET comp_date=?, billing=?, notes=CONCAT(notes, '\n" . date("Y-m-d") . ": ', ?) WHERE ticket_id=?");
+    $query = $conn -> prepare("UPDATE tickets SET comp_date=?, billing=? WHERE ticket_id=?");
     // Attach the username argument provided
-    $query -> bind_param("ssss", $comp_date, $billing, $notes, $ticket_id);
+    $query -> bind_param("sss", $comp_date, $billing, $ticket_id);
     // Execute and store the result of the query
     $success = $query->execute();
     if ($conn->error != '') {
         throw new Exception("ERROR: db_update_complete_ticket(); $conn->error");
     }
+    $success = $success && db_update_ticket_notes($ticket_id, $notes);
     // Return the status of the query (success, true or false)
     return $success;
 }
@@ -491,14 +492,15 @@ function db_update_schedule_ticket($ticket_id, $user_name, $sched_date, $notes)
     // Establish database connection
     $conn = db_connect();
     // Prepare the query
-    $query = $conn -> prepare("UPDATE tickets SET `type`='Scheduled', `user_name`='', `accept_date`='0000-00-00', sched_date=?, notes=CONCAT(notes, '\n" . date("Y-m-d") . ": ', ?) WHERE ticket_id=?;");
+    $query = $conn -> prepare("UPDATE tickets SET `type`='Scheduled', `user_name`='', `accept_date`='0000-00-00', sched_date=? WHERE ticket_id=?;");
     // Attach the username argument provided
-    $query -> bind_param("sss", $sched_date, $notes, $ticket_id);
+    $query -> bind_param("ss", $sched_date, $ticket_id);
     // Execute and store the result of the query
     $success = $query->execute();
     if ($conn->error != '') {
         throw new Exception("ERROR: db_update_schedule_ticket(); $conn->error");
     }
+    $success = $success && db_update_ticket_notes($ticket_id, $notes);
     // Return the status of the query (success, true or false)
     return $success;
 }
@@ -508,14 +510,15 @@ function db_update_to_order_ticket($ticket_id, $user_name, $notes)
     // Establish database connection
     $conn = db_connect();
     // Prepare the query
-    $query = $conn -> prepare("UPDATE tickets SET `type`='To Order', notes=CONCAT(notes, '\n" . date("Y-m-d") . ": ', ?), accept_date='0000-00-00', user_name='' WHERE ticket_id=? AND user_name=?;");
+    $query = $conn -> prepare("UPDATE tickets SET `type`='To Order', accept_date='0000-00-00', user_name='' WHERE ticket_id=? AND user_name=?;");
     // Attach the username argument provided
-    $query -> bind_param("sss", $notes, $ticket_id, $user_name);
+    $query -> bind_param("ss", $ticket_id, $user_name);
     // Execute and store the result of the query
     $success = $query->execute();
     if ($conn->error != '') {
         throw new Exception("ERROR: db_update_to_order_ticket(); $conn->error");
     }
+    $success = $success && db_update_ticket_notes($ticket_id, $notes);
     // Return the status of the query (success, true or false)
     return $success;
 }
@@ -525,31 +528,37 @@ function db_update_on_order_ticket($ticket_id, $user_name, $notes)
     // Establish database connection
     $conn = db_connect();
     // Prepare the query
-    $query = $conn -> prepare("UPDATE tickets SET `type`='On Order', notes=CONCAT(notes, '\n" . date("Y-m-d") . ": ', ?) WHERE ticket_id=?;");
+    $query = $conn -> prepare("UPDATE tickets SET `type`='On Order' WHERE ticket_id=?;");
     // Attach the username argument provided
-    $query -> bind_param("ss", $notes, $ticket_id);
+    $query -> bind_param("s", $ticket_id);
     // Execute and store the result of the query
     $success = $query->execute();
     if ($conn->error != '') {
         throw new Exception("ERROR: db_update_on_order_ticket(); $conn->error");
     }
+    $success = $success && db_update_ticket_notes($ticket_id, $notes);
     // Return the status of the query (success, true or false)
     return $success;
 }
 
 function db_update_ticket_notes($ticket_id, $notes)
 {
-    // Establish database connection
-    $conn = db_connect();
-    // Prepare the query
-    $query = $conn -> prepare("UPDATE tickets SET notes=CONCAT(notes, '\n" . date("Y-m-d") . ": ', ?) WHERE ticket_id=?;");
-    // Attach the username argument provided
-    $query -> bind_param("ss", $notes, $ticket_id);
-    // Execute and store the result of the query
-    $success = $query->execute();
-    if ($conn->error != '') {
-        throw new Exception("ERROR: db_update_ticket_notes(); $conn->error");
+    if ($notes != "") {
+        // Establish database connection
+        $conn = db_connect();
+        // Prepare the query
+        $query = $conn -> prepare("UPDATE tickets SET notes=CONCAT(notes, '\n" . date("Y-m-d") . ": ', ?) WHERE ticket_id=?;");
+        // Attach the username argument provided
+        $query -> bind_param("ss", $notes, $ticket_id);
+        // Execute and store the result of the query
+        $success = $query->execute();
+        if ($conn->error != '') {
+            throw new Exception("ERROR: db_update_ticket_notes(); $conn->error");
+        }
+        // Return the status of the query (success, true or false)
+        return $success;
     }
-    // Return the status of the query (success, true or false)
-    return $success;
+    else {
+        return true;
+    }
 }
