@@ -18,6 +18,9 @@ try {
     // Authenticate user using request's PIN before doing anything else
     $user = common_user();
 
+    // The date
+    $stamp = time();
+
     // We will need to test and move each uploaded file
     for ($i = 0; $i < count($_FILES); $i++) {
         // Uploaded files must have an "error" property, on success this property is an "ok" flag
@@ -57,14 +60,14 @@ try {
         // Copy the file to a new location
         $move_result = move_uploaded_file(
             $_FILES["ticket_image-$i"]['tmp_name'], // source file
-            "./uploads/ticket-$ticket_id-$i.$ext" // destination to save file
+            "./uploads/ticket-$ticket_id-$stamp-$i.$ext" // destination to save file
         );
         if (!$move_result) {
             throw new Exception('ERROR: upload_ticket_image.php; Failed to store uploaded file!');
         }
 
         // Upload the image to ticket image lists
-        $result = db_create_image_listing(array("ticket_id"=>$ticket_id, "image"=>"ticket-$ticket_id-$i.$ext"));
+        $result = db_create_image_listing(array("ticket_id"=>$ticket_id, "image"=>"ticket-$ticket_id-$stamp-$i.$ext"));
         if ($result) {
             common_echo_success("Image listed in the database!");
         } else {
